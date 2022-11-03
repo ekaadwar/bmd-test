@@ -1,13 +1,13 @@
 const bcrypt = require("bcrypt");
 const fs = require("fs");
-const modelKelas = require("../models/kelas");
+const modelSiswa = require("../models/siswa");
 const { response } = require("../helpers/standardResponse");
 const { APP_URL } = process.env;
 
-exports.addKelas = (req, res) => {
+exports.addSiswa = (req, res) => {
   if (req.authUser.role === "admin") {
     const data = req.body;
-    modelKelas.createKelasByAdmin(data, (error, results) => {
+    modelSiswa.createSiswaByAdmin(data, (error, results) => {
       if (!error) {
         return response(res, 200, true, "Data has been inserted succesfully!");
       } else {
@@ -19,7 +19,7 @@ exports.addKelas = (req, res) => {
   }
 };
 
-exports.getKelas = (req, res) => {
+exports.getSiswa = (req, res) => {
   console.log(req.authUser);
   if (req.authUser.role === "admin") {
     const condition = req.query;
@@ -31,9 +31,9 @@ exports.getKelas = (req, res) => {
 
     let pageInfo = {};
 
-    modelKelas.getKelasByCond(condition, (error, resKelas) => {
+    modelSiswa.getSiswaByCond(condition, (error, resSiswa) => {
       if (!error) {
-        modelKelas.getTotalKelas(condition, (errTotal, resTotal) => {
+        modelSiswa.getTotalSiswa(condition, (errTotal, resTotal) => {
           if (!errTotal) {
             const totalData = resTotal[0].count;
             const lastPage = Math.ceil(totalData / condition.limit);
@@ -44,11 +44,11 @@ exports.getKelas = (req, res) => {
             pageInfo.limit = condition.limit;
             pageInfo.nextPage =
               condition.page < lastPage
-                ? `${APP_URL}/kelas?page=${pageInfo.currentPage + 1}`
+                ? `${APP_URL}/siswa?page=${pageInfo.currentPage + 1}`
                 : null;
             pageInfo.prevPage =
               condition.page > 1
-                ? `${APP_URL}/kelas?page=${pageInfo.currentPage - 1}`
+                ? `${APP_URL}/siswa?page=${pageInfo.currentPage - 1}`
                 : null;
 
             return response(
@@ -56,7 +56,7 @@ exports.getKelas = (req, res) => {
               200,
               true,
               "Search data succesfully",
-              resKelas,
+              resSiswa,
               pageInfo
             );
           } else {
@@ -76,12 +76,13 @@ exports.getKelas = (req, res) => {
 // ---------- update ----------
 // ----------------------------
 
-exports.updateKelasById = (req, res) => {
+exports.updateSiswaById = (req, res) => {
   const { id: idUser } = req.params;
   const id = parseInt(idUser);
+  console.log(req.body);
 
   if (req.authUser.role === "admin") {
-    modelKelas.getKelasById(idUser, (error, results) => {
+    modelSiswa.getSiswaById(idUser, (error, results) => {
       if (!error) {
         const column = Object.keys(req.body);
         const value = Object.values(req.body);
@@ -94,7 +95,7 @@ exports.updateKelasById = (req, res) => {
 
             const data = { id, col, val };
 
-            modelKelas.updateKelasPart(data, (errorUpdate) => {
+            modelSiswa.updateSiswaPart(data, (errorUpdate) => {
               if (!errorUpdate) {
                 console.log(`${col} column has been successfully updated`);
               } else {
@@ -130,15 +131,15 @@ exports.updateKelasById = (req, res) => {
 // ---------- delete ----------
 // ----------------------------
 
-exports.deleteKelasById = (req, res) => {
+exports.deleteSiswaById = (req, res) => {
   const { id: idUser } = req.params;
   const id = parseInt(idUser);
 
   if (req.authUser.role === "admin") {
-    modelKelas.getKelasById(id, (error, results) => {
+    modelSiswa.getSiswaById(id, (error, results) => {
       if (!error) {
         if (results.length > 0) {
-          modelKelas.deleteKelasById(id, (error) => {
+          modelSiswa.deleteSiswaById(id, (error) => {
             if (!error) {
               return response(
                 res,
