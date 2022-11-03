@@ -28,6 +28,7 @@ exports.login = (req, res) => {
         const user = results[0];
         const userId = user.id;
         const compare = await bcrypt.compare(password, user.password);
+        console.log(user);
 
         if (compare) {
           const payload = { id: user.id, email: user.email, role: user.role };

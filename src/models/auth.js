@@ -12,7 +12,7 @@ exports.createUsers = (data, cb) => {
 exports.getUserByEmail = (email, cb) => {
   connection.query(
     `
-      SELECT ${table}.id, ${table}.nama, ${table}.email, ${table}.password
+      SELECT ${table}.id, ${table}.nama, ${table}.email, ${table}.password, ${table}.role
       FROM ${table}
       WHERE ${table}.email=?
     `,
