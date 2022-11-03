@@ -4,6 +4,21 @@ const modelKelas = require("../models/kelas");
 const { response } = require("../helpers/standardResponse");
 const { APP_URL } = process.env;
 
+exports.addKelas = (req, res) => {
+  if (req.authUser.role === "admin") {
+    const data = req.body;
+    modelKelas.createKelasByAdmin(data, (error, results) => {
+      if (!error) {
+        return response(res, 200, true, "Data has been inserted succesfully!");
+      } else {
+        response(res, 500, false, error);
+      }
+    });
+  } else {
+    return response(res, 400, false, "Sorry, you have no authority!");
+  }
+};
+
 exports.getKelas = (req, res) => {
   console.log(req.authUser);
   if (req.authUser.role === "admin") {
@@ -35,6 +50,7 @@ exports.getKelas = (req, res) => {
               condition.page > 1
                 ? `${APP_URL}/kelas?page=${pageInfo.currentPage - 1}`
                 : null;
+
             return response(
               res,
               200,

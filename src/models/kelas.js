@@ -1,6 +1,14 @@
 const connection = require("../helpers/database");
 const table = "kelas";
 
+exports.createKelasByAdmin = (data, cb) => {
+  connection.query(
+    `INSERT INTO ${table} (nama, jenjang_kelas, tahun_ajaran, status) VALUES (?, ?, ?, ?)`,
+    [data.nama, data.jenjangKelas, data.tahunAjaran, data.status],
+    cb
+  );
+};
+
 exports.getKelasByCond = (cond, cb) => {
   let where = `${table}.nama LIKE '%${cond.search}%'`;
   connection.query(
