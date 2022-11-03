@@ -27,9 +27,12 @@ exports.createSiswaByAdmin = (data, cb) => {
 
 exports.getSiswaByCond = (cond, cb) => {
   let where = `${table}.nama LIKE '%${cond.search}%'`;
+  if (cond.kelas) {
+    where += ` AND id_kelas = ${cond.kelas}`;
+  }
   connection.query(
     `
-    SELECT nis, ${table}.nama, kelas.nama, jenis_kelamin, nama_ayah, nama_ibu, alamat
+    SELECT nis, ${table}.nama AS nama, kelas.nama AS kelas, jenis_kelamin, nama_ayah, nama_ibu, alamat
     FROM ${table} LEFT JOIN kelas ON ${table}.id_kelas = kelas.id
     WHERE ${where}
     LIMIT ? OFFSET ?`,
@@ -51,6 +54,9 @@ exports.getSiswaById = (id, cb) => {
 
 exports.getTotalSiswa = (cond, cb) => {
   let whereVar = `${table}.nama LIKE '%${cond.search}%' `;
+  if (cond.kelas) {
+    whereVar += ` AND id_kelas = ${cond.kelas}`;
+  }
   connection.query(
     `SELECT COUNT(${table}.id) as count FROM ${table} WHERE ${whereVar}`,
     cb

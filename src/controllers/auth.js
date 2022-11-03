@@ -28,7 +28,6 @@ exports.login = (req, res) => {
         const user = results[0];
         const userId = user.id;
         const compare = await bcrypt.compare(password, user.password);
-        console.log(user);
 
         if (compare) {
           const payload = { id: user.id, email: user.email, role: user.role };
@@ -36,7 +35,7 @@ exports.login = (req, res) => {
           response(res, 200, true, `Welcome ${user.nama}`, {
             userId,
             token,
-            photo: user.foto,
+            role: user.role,
           });
         } else {
           response(res, 400, false, "Wrong email or password");

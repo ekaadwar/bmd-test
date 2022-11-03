@@ -1,23 +1,61 @@
 const bcrypt = require("bcrypt");
 const fs = require("fs");
 const modelSiswa = require("../models/siswa");
+const modelKelas = require("../models/kelas");
 const { response } = require("../helpers/standardResponse");
 const { APP_URL } = process.env;
+
+// ---------- create ----------
+// ---------- create ----------
+// ---------- create ----------
 
 exports.addSiswa = (req, res) => {
   if (req.authUser.role === "admin") {
     const data = req.body;
-    modelSiswa.createSiswaByAdmin(data, (error, results) => {
+    modelKelas.getKelasById(data.idKelas, (error, resKelas) => {
       if (!error) {
-        return response(res, 200, true, "Data has been inserted succesfully!");
+        modelSiswa.createSiswaByAdmin(data, (error) => {
+          if (!error) {
+            const updateKelas = resKelas[0].jumlahSiswa + 1;
+            const dataUpdate = {
+              id: resKelas[0].id,
+              col: "jumlah_siswa",
+              val: updateKelas,
+            };
+            console.log(dataUpdate);
+            modelKelas.updateKelasPart(dataUpdate, (err) => {
+              if (!err) {
+                return response(
+                  res,
+                  200,
+                  true,
+                  "Data has been inserted succesfully!"
+                );
+              } else {
+                return response(
+                  res,
+                  500,
+                  false,
+                  "Gagal saat meng-update data kelas"
+                );
+              }
+            });
+          } else {
+            response(res, 500, false, error);
+          }
+        });
       } else {
-        response(res, 500, false, error);
+        return response(res, 500, false, "Kelas tidak tersedia.");
       }
     });
   } else {
     return response(res, 400, false, "Sorry, you have no authority!");
   }
 };
+
+// ---------- read ----------
+// ---------- read ----------
+// ---------- read ----------
 
 exports.getSiswa = (req, res) => {
   console.log(req.authUser);

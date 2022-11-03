@@ -41,9 +41,9 @@ exports.getKelasById = (id, cb) => {
     SELECT 
     ${table}.id,
     ${table}.nama,
-    ${table}.jenjang_kelas,
-    ${table}.jumlah_siswa,
-    ${table}.tahun_ajaran,
+    ${table}.jenjang_kelas AS jenjangKelas,
+    ${table}.jumlah_siswa AS jumlahSiswa,
+    ${table}.tahun_ajaran AS tahunAjaran,
     ${table}.status
     FROM ${table} 
     WHERE ${table}.id=${id}
