@@ -117,7 +117,6 @@ exports.getSiswa = (req, res) => {
 exports.updateSiswaById = (req, res) => {
   const { id: idUser } = req.params;
   const id = parseInt(idUser);
-  console.log(req.body);
 
   if (req.authUser.role === "admin") {
     modelSiswa.getSiswaById(idUser, (error, results) => {
@@ -135,7 +134,20 @@ exports.updateSiswaById = (req, res) => {
 
             modelSiswa.updateSiswaPart(data, (errorUpdate) => {
               if (!errorUpdate) {
-                console.log(`${col} column has been successfully updated`);
+                if (col === "id_kelas") {
+                  const oldClass = results[0].idKelas;
+                  console.log(results[0]);
+                  const newClass = val;
+                  modelKelas.getKelasById(oldClass, (err, resOldClass) => {
+                    if (!error) {
+                      console.log(resOldClass);
+                    } else {
+                      console.log(error);
+                    }
+                  });
+                } else {
+                  console.log(`${col} column has been successfully updated`);
+                }
               } else {
                 console.log(`${col} column has been failed to update`);
               }
@@ -177,14 +189,33 @@ exports.deleteSiswaById = (req, res) => {
     modelSiswa.getSiswaById(id, (error, results) => {
       if (!error) {
         if (results.length > 0) {
+          console.log(results);
           modelSiswa.deleteSiswaById(id, (error) => {
             if (!error) {
-              return response(
-                res,
-                200,
-                true,
-                "deleting data has been successful."
-              );
+              console.log(results[0].idKelas);
+              modelKelas.getKelasById(results[0].idKelas, (error, resKelas) => {
+                if (!error) {
+                  const data = {
+                    id: resKelas[0].id,
+                    col: "jumlah_siswa",
+                    val: resKelas[0].jumlahSiswa - 1,
+                  };
+                  modelKelas.updateKelasPart(data, (error) => {
+                    if (!error) {
+                      return response(
+                        res,
+                        200,
+                        true,
+                        "deleting data has been successful."
+                      );
+                    } else {
+                      return response(res, 500, false, error);
+                    }
+                  });
+                } else {
+                  console.log(error);
+                }
+              });
             } else {
               return response(res, 500, false, "Failed to delete data.");
             }

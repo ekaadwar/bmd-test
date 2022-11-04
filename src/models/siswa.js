@@ -32,7 +32,7 @@ exports.getSiswaByCond = (cond, cb) => {
   }
   connection.query(
     `
-    SELECT nis, ${table}.nama AS nama, kelas.nama AS kelas, jenis_kelamin, nama_ayah, nama_ibu, alamat
+    SELECT ${table}.id AS id, nis, ${table}.nama AS nama, kelas.nama AS kelas, jenis_kelamin, nama_ayah, nama_ibu, alamat
     FROM ${table} LEFT JOIN kelas ON ${table}.id_kelas = kelas.id
     WHERE ${where}
     LIMIT ? OFFSET ?`,
@@ -44,7 +44,7 @@ exports.getSiswaByCond = (cond, cb) => {
 exports.getSiswaById = (id, cb) => {
   connection.query(
     `
-    SELECT nis, ${table}.nama, kelas.nama, jenis_kelamin, nama_ayah, nama_ibu, alamat
+    SELECT nis, ${table}.nama AS nama, kelas.id AS idKelas ,kelas.nama AS namaKelas, jenis_kelamin AS jenisKelamin, nama_ayah AS namaAyah, nama_ibu AS namaIbu, alamat
     FROM ${table} LEFT JOIN kelas ON ${table}.id_kelas = kelas.id
     WHERE ${table}.id=${id}
     `,
